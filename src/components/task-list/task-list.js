@@ -3,17 +3,15 @@ import Task from '../task';
 
 const TaskList = ({ tasks, onDeleted, onToggleCompleted, onToggleEditing }) => {
 
-   const elements = tasks.map((item) => {
-
-      const { key, ...taskItems } = item;
+   const elements = tasks.map(({ id, ...taskItems }) => {
 
       return (
          <Task
-            key={key}
+            key={id}
             {...taskItems}
-            onDeleted={() => onDeleted(key)}
-            onToggleCompleted={() => onToggleCompleted(key)}
-            onToggleEditing={() => onToggleEditing(key)} />
+            onDeleted={() => onDeleted(id)}
+            onToggleCompleted={() => onToggleCompleted(id)}
+            onToggleEditing={() => onToggleEditing(id)} />
       );
    });
 

@@ -8,18 +8,24 @@ export default class Task extends Component {
          onToggleCompleted, onToggleEditing,
          completed, editing } = this.props;
 
-      let classNames = '';
 
-      if (editing) {
-         classNames += ' editing';
+      const setClassNames = () => {
+         let classNames = '';
+
+         if (editing) {
+            classNames += ' editing';
+         }
+
+         if (completed) {
+            classNames += ' completed'
+         }
+
+         return classNames;
       }
 
-      if (completed) {
-         classNames += ' completed'
-      }
 
       return (
-         <li className={classNames}>
+         <li className={setClassNames()}>
             <div className="view">
                <input
                   className="toggle"

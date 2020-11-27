@@ -7,7 +7,9 @@ import Footer from '../footer';
 
 export default class TodoApp extends Component {
 
-   maxId = 100;
+   setID() {
+      return '_' + Math.random().toString(36).substr(2, 9);
+   }
 
    state = {
       taskData: [
@@ -22,19 +24,14 @@ export default class TodoApp extends Component {
          description,
          completed: false,
          editing: false,
-         key: this.maxId++
+         id: this.setID()
       }
    }
 
-   deleteItem = (key) => {
+   deleteItem = (id) => {
       this.setState(({ taskData }) => {
 
-         const idx = taskData.findIndex((el) => el.key === key);
-
-         const before = taskData.slice(0, idx);
-         const after = taskData.slice(idx + 1);
-
-         const newTaskData = [...before, ...after];
+         const newTaskData = taskData.filter((el) => el.id !== id);
 
          return {
             taskData: newTaskData
@@ -59,30 +56,40 @@ export default class TodoApp extends Component {
       });
    };
 
-   toggleProperty(arr, key, propName) {
-      const idx = arr.findIndex((el) => el.key === key);
+   toggleProperty(arr, id, propName) {
 
-      const oldItem = arr[idx];
-      const newItem = { ...oldItem, [propName]: !oldItem[propName] };
+      return arr.map((item) => {
+         
+         if (item.id === id) {
+            let newItem = { ...item, [propName]: !item[propName] };
+            return newItem;
+         };
 
-      const before = arr.slice(0, idx);
-      const after = arr.slice(idx + 1);
-
-      return [...before, newItem, ...after];
+         return item;
+      });
    };
 
-   onToggleCompleted = (key) => {
+   onToggleCompleted = (id) => {
       this.setState(({ taskData }) => {
          return {
-            taskData: this.toggleProperty(taskData, key, 'completed')
+            taskData: this.toggleProperty(taskData, id, 'completed')
          };
       });
    };
 
-   onToggleEditing = (key) => {
+   onToggleEditing = (id) => {
       this.setState(({ taskData }) => {
          return {
-            taskData: this.toggleProperty(taskData, key, 'editing')
+            taskData: this.toggleProperty(taskData, id, 'editing')
+         };
+      });
+   };
+
+   onClearCompleted = () => {
+      const newArr = this.state.taskData.filter((el) => !el.completed);
+      this.setState(() => {
+         return {
+            taskData: newArr
          };
       });
    };
@@ -105,7 +112,7 @@ export default class TodoApp extends Component {
                   onDeleted={this.deleteItem}
                   onToggleCompleted={this.onToggleCompleted}
                   onToggleEditing={this.onToggleEditing} />
-               <Footer taskCount={taskCount} />
+               <Footer taskCount={taskCount} onClearCompleted={this.onClearCompleted} />
             </section>
          </section>
       );
