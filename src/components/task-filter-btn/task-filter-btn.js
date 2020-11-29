@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TaskFilterBtn = ({ label, isActive }) => {
+const TaskFilterBtn = ({ label, isActive, onToggleActive }) => {
 
    function setClassName() {
       let classNames = '';
@@ -13,7 +13,8 @@ const TaskFilterBtn = ({ label, isActive }) => {
    return (
       <li>
          <button
-            className={setClassName()}>
+            className={setClassName()}
+            onClick={onToggleActive}>
             {label}
          </button>
       </li>

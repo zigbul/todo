@@ -16,7 +16,8 @@ export default class TodoApp extends Component {
          this.createTodoItem('Completed Task'),
          this.createTodoItem('Editing Task'),
          this.createTodoItem('New Task'),
-      ]
+      ],
+      
    };
 
    createTodoItem(description) {
@@ -59,7 +60,7 @@ export default class TodoApp extends Component {
    toggleProperty(arr, id, propName) {
 
       return arr.map((item) => {
-         
+
          if (item.id === id) {
             let newItem = { ...item, [propName]: !item[propName] };
             return newItem;
@@ -112,7 +113,7 @@ export default class TodoApp extends Component {
                   onDeleted={this.deleteItem}
                   onToggleCompleted={this.onToggleCompleted}
                   onToggleEditing={this.onToggleEditing} />
-               <Footer taskCount={taskCount} onClearCompleted={this.onClearCompleted} />
+               <Footer taskCount={taskCount} onClearCompleted={this.onClearCompleted} tasks={taskData}/>
             </section>
          </section>
       );
