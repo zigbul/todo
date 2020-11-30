@@ -6,7 +6,7 @@ export default class Task extends Component {
 
       const { description, onDeleted,
          onToggleCompleted, onToggleEditing,
-         completed, editing } = this.props;
+         completed, editing, hidden } = this.props;
 
 
       const setClassNames = () => {
@@ -18,6 +18,10 @@ export default class Task extends Component {
 
          if (completed) {
             classNames += ' completed'
+         }
+
+         if (hidden) {
+            classNames += ' hidden'
          }
 
          return classNames;
