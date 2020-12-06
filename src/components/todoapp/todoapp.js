@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import '../../index.css';
+import { ENTER_KEY_CODE, ESC_KEY_CODE } from '../../constants';
 
-import NewTaskForm from '../new-task-form';
-import TaskList from '../task-list';
-import Footer from '../footer';
-import { waitForElementToBeRemoved } from '@testing-library/react';
+import NewTaskForm from '../New-task-form';
+import TaskList from '../Task-list';
+import Footer from '../Footer';
 
 export default class TodoApp extends Component {
 
@@ -32,6 +32,7 @@ export default class TodoApp extends Component {
          editing: false,
          id: this.setID(),
          hidden: false,
+         time: new Date()
       }
    }
 
@@ -115,6 +116,12 @@ export default class TodoApp extends Component {
       });
    };
 
+   onKeyCodeDown = (e) => {
+      if (e.keyCode === ENTER_KEY_CODE || e.keyCode === ESC_KEY_CODE) {
+         console.log('a');
+      }
+   };
+
    onToggleActive = (id) => {
       this.setState(({ filterBtnsData }) => {
          return {
@@ -167,6 +174,16 @@ export default class TodoApp extends Component {
       });
    };
 
+   onKeyCodeDown = (e, id) => {
+      if (e.keyCode === ENTER_KEY_CODE || e.keyCode === ESC_KEY_CODE) {
+         this.setState(({ taskData }) => {
+            return {
+               taskData: this.toggleProperty(taskData, id, 'editing')
+            };
+         });
+      }
+   }
+
    render() {
 
       const { taskData, filterBtnsData } = this.state;
@@ -185,7 +202,8 @@ export default class TodoApp extends Component {
                   onDeleted={this.deleteItem}
                   onToggleCompleted={this.onToggleCompleted}
                   onToggleEditing={this.onToggleEditing}
-                  filterBtns={filterBtnsData} />
+                  filterBtns={filterBtnsData}
+                  onKeyCodeDown={this.onKeyCodeDown} />
                <Footer
                   taskCount={taskCount}
                   onClearCompleted={this.onClearCompleted}

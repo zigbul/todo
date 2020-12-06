@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TaskFilterBtn from '../task-filter-btn';
+import TaskFilterBtn from '../Task-filter-btn';
 
 export default class TasksFilter extends Component {
 

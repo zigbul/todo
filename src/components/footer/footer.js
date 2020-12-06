@@ -1,5 +1,5 @@
 import React from 'react';
-import TasksFilter from '../tasks-filter/tasks-filter';
+import TasksFilter from '../Tasks-filter/Tasks-filter';
 
 const Footer = ({ taskCount, onClearCompleted, filterBtns, tasks, onToggleActive }) => {
 

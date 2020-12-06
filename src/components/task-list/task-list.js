@@ -1,7 +1,7 @@
 import React from 'react';
-import Task from '../task';
+import Task from '../Task';
 
-const TaskList = ({ tasks, onDeleted, onToggleCompleted, onToggleEditing }) => {
+const TaskList = ({ tasks, onDeleted, onToggleCompleted, onToggleEditing, onKeyCodeDown }) => {
 
    const elements = tasks.map(({ id, ...taskItems }) => {
 
@@ -9,6 +9,7 @@ const TaskList = ({ tasks, onDeleted, onToggleCompleted, onToggleEditing }) => {
          <Task
             key={id}
             {...taskItems}
+            onKeyCodeDown={(e) => onKeyCodeDown(e, id)}
             onDeleted={() => onDeleted(id)}
             onToggleCompleted={() => onToggleCompleted(id)}
             onToggleEditing={() => onToggleEditing(id)} />
