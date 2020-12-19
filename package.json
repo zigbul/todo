@@ -18,6 +18,7 @@
     "lint": "eslint --debug src/",
     "lint:fix": "eslint --debug src/ --fix",
     "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
