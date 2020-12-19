@@ -1,45 +1,99 @@
 import React, { Component } from 'react';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import PropTypes from 'prop-types';
 
 export default class Task extends Component {
+  constructor(props) {
+    super(props);
+    const { description } = this.props;
+    this.state = {
+      description,
+    };
+  }
 
-   render() {
+  onLabelChange = (e) => {
+    this.setState({
+      description: e.target.value,
+    });
+  };
 
-      const { description, onDeleted,
-         onToggleCompleted, onToggleEditing,
-         completed, editing } = this.props;
+  render() {
+    const {
+      onDeleted,
+      onToggleCompleted,
+      onToggleEditing,
+      completed,
+      hidden,
+      time,
+      editing,
+      onKeyCodeDown,
+    } = this.props;
 
+    const { description } = this.state;
+
+    const setClassNames = () => {
       let classNames = '';
 
       if (editing) {
-         classNames += ' editing';
+        classNames += ' editing';
       }
 
       if (completed) {
-         classNames += ' completed'
+        classNames += ' completed';
       }
 
-      return (
-         <li className={classNames}>
-            <div className="view">
-               <input
-                  className="toggle"
-                  type="checkbox"
-                  onClick={onToggleCompleted} />
-               <label>
-                  <span className="description">{description}</span>
-                  <span className="created">created 5 minutes ago</span>
-               </label>
-               <button
-                  className="icon icon-edit"
-                  onClick={onToggleEditing} >
-               </button>
-               <button
-                  className="icon icon-destroy"
-                  onClick={onDeleted}>
-               </button>
-            </div>
-            <input type="text" className="edit" value={description} />
-         </li >
-      );
-   };
+      if (hidden) {
+        classNames += ' hidden';
+      }
+
+      return classNames;
+    };
+
+    return (
+      <li className={setClassNames()}>
+        <div className="view">
+          <input className="toggle" type="checkbox" onClick={onToggleCompleted} />
+          <label htmlFor="description created">
+            <span id="description" className="description">
+              {description}
+            </span>
+            <span id="created" className="created">
+              {formatDistanceToNow(time, { includeSeconds: true })}
+            </span>
+          </label>
+          <button
+            type="button"
+            className="icon icon-edit"
+            onClick={onToggleEditing}
+            aria-label="Editing Toggle"
+          />
+          <button
+            type="button"
+            className="icon icon-destroy"
+            onClick={onDeleted}
+            aria-label="Delete Task"
+          />
+        </div>
+        <input
+          type="text"
+          className="edit"
+          onChange={this.onLabelChange}
+          onKeyDown={onKeyCodeDown}
+          value={description}
+        />
+      </li>
+    );
+  }
+}
+
+Task.propTypes = {
+  description: PropTypes.string,
+  onDeleted: PropTypes.func,
+  onToggleCompleted: PropTypes.func,
+  onToggleEditing: PropTypes.func,
+  completed: PropTypes.bool,
+  hidden: PropTypes.bool,
+  time: PropTypes.any,
+  editing: PropTypes.bool,
+  onKeyCodeDown: PropTypes.func,
 };

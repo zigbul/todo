@@ -1,113 +1,212 @@
 import React, { Component } from 'react';
 import '../../index.css';
+import { ENTER_KEY_CODE, ESC_KEY_CODE } from '../../constants';
 
-import NewTaskForm from '../new-task-form';
-import TaskList from '../task-list';
-import Footer from '../footer';
+import NewTaskForm from '../New-task-form';
+import TaskList from '../Task-list';
+import Footer from '../Footer';
 
 export default class TodoApp extends Component {
-
-   maxId = 100;
-
-   state = {
+  constructor(props) {
+    super(props);
+    this.state = {
       taskData: [
-         this.createTodoItem('Completed Task'),
-         this.createTodoItem('Editing Task'),
-         this.createTodoItem('New Task'),
-      ]
-   };
+        this.createTodoItem('Completed Task'),
+        this.createTodoItem('Editing Task'),
+        this.createTodoItem('New Task'),
+      ],
+      filterBtnsData: [
+        { label: 'All', isActive: false, id: 1 },
+        { label: 'Active', isActive: true, id: 2 },
+        { label: 'Completed', isActive: false, id: 3 },
+      ],
+    };
+  }
 
-   createTodoItem(description) {
+  setID = () => {
+    return `_${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  deleteItem = (id) => {
+    this.setState(({ taskData }) => {
+      const newTaskData = taskData.filter((el) => el.id !== id);
+
       return {
-         description,
-         completed: false,
-         editing: false,
-         key: this.maxId++
+        taskData: newTaskData,
+      };
+    });
+  };
+
+  addItem = (text) => {
+    const newItem = this.createTodoItem(text);
+
+    this.setState(({ taskData }) => {
+      const newTaskData = [...taskData, newItem];
+
+      return {
+        taskData: newTaskData,
+      };
+    });
+  };
+
+  onToggleCompleted = (id) => {
+    this.setState(({ taskData }) => {
+      return {
+        taskData: this.toggleProperty(taskData, id, 'completed'),
+      };
+    });
+  };
+
+  onToggleEditing = (id) => {
+    this.setState(({ taskData }) => {
+      return {
+        taskData: this.toggleProperty(taskData, id, 'editing'),
+      };
+    });
+  };
+
+  onClearCompleted = () => {
+    const { taskData } = this.state;
+    const newArr = taskData.filter((el) => !el.completed);
+    this.setState(() => {
+      return {
+        taskData: newArr,
+      };
+    });
+  };
+
+  onToggleActive = (id) => {
+    this.setState(({ filterBtnsData }) => {
+      return {
+        filterBtnsData: this.activeToggler(filterBtnsData, id, 'isActive'),
+      };
+    });
+
+    const { taskData, filterBtnsData } = this.state;
+
+    filterBtnsData.forEach((el) => {
+      if (el.isActive && el.id === 3) {
+        const newArr = taskData.map((data) => {
+          if (data.completed === false) {
+            const newData = { ...data, hidden: true };
+            return newData;
+          }
+          if (data.completed) {
+            const newData = { ...data, hidden: false };
+            return newData;
+          }
+          return data;
+        });
+        this.setState(() => {
+          return {
+            taskData: newArr,
+          };
+        });
+      } else if (el.isActive && el.id === 2) {
+        const newArr = taskData.map((data) => {
+          if (data.completed) {
+            const newData = { ...data, hidden: true };
+            return newData;
+          }
+          if (data.completed === false) {
+            const newData = { ...data, hidden: false };
+            return newData;
+          }
+          return data;
+        });
+        this.setState(() => {
+          return {
+            taskData: newArr,
+          };
+        });
+      } else if (el.isActive && el.id === 1) {
+        const newArr = taskData.map((data) => {
+          const newData = { ...data, hidden: false };
+          return newData;
+        });
+        this.setState(() => {
+          return {
+            taskData: newArr,
+          };
+        });
       }
-   }
+    });
+  };
 
-   deleteItem = (key) => {
+  onKeyCodeDown = (e, id) => {
+    if (e.keyCode === ENTER_KEY_CODE || e.keyCode === ESC_KEY_CODE) {
       this.setState(({ taskData }) => {
-
-         const idx = taskData.findIndex((el) => el.key === key);
-
-         const before = taskData.slice(0, idx);
-         const after = taskData.slice(idx + 1);
-
-         const newTaskData = [...before, ...after];
-
-         return {
-            taskData: newTaskData
-         };
+        return {
+          taskData: this.toggleProperty(taskData, id, 'editing'),
+        };
       });
-   };
+    }
+  };
 
-   addItem = (text) => {
+  activeToggler(arr, id, propName) {
+    return arr.map((item) => {
+      if (item.id === id && item.isActive === false) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
+      if (item.id !== id && item.isActive === true) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
+      return item;
+    });
+  }
 
-      const newItem = this.createTodoItem(text);
+  toggleProperty(arr, id, propName) {
+    return arr.map((item) => {
+      if (item.id === id) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
 
-      this.setState(({ taskData }) => {
+      return item;
+    });
+  }
 
-         const newTaskData = [
-            ...taskData,
-            newItem
-         ];
+  createTodoItem(description) {
+    return {
+      description,
+      completed: false,
+      editing: false,
+      id: this.setID(),
+      hidden: false,
+      time: new Date(),
+    };
+  }
 
-         return {
-            taskData: newTaskData
-         };
-      });
-   };
+  render() {
+    const { taskData, filterBtnsData } = this.state;
+    const completedCount = taskData.filter((el) => el.completed).length;
+    const taskCount = taskData.length - completedCount;
 
-   toggleProperty(arr, key, propName) {
-      const idx = arr.findIndex((el) => el.key === key);
-
-      const oldItem = arr[idx];
-      const newItem = { ...oldItem, [propName]: !oldItem[propName] };
-
-      const before = arr.slice(0, idx);
-      const after = arr.slice(idx + 1);
-
-      return [...before, newItem, ...after];
-   };
-
-   onToggleCompleted = (key) => {
-      this.setState(({ taskData }) => {
-         return {
-            taskData: this.toggleProperty(taskData, key, 'completed')
-         };
-      });
-   };
-
-   onToggleEditing = (key) => {
-      this.setState(({ taskData }) => {
-         return {
-            taskData: this.toggleProperty(taskData, key, 'editing')
-         };
-      });
-   };
-
-   render() {
-
-      const { taskData } = this.state;
-      const completedCount = taskData.filter((el) => el.completed).length;
-      const taskCount = taskData.length - completedCount;
-
-      return (
-         <section className="todoapp" >
-            <header className="header">
-               <h1>todos</h1>
-               <NewTaskForm onItemAdded={this.addItem} />
-            </header>
-            <section className="main">
-               <TaskList
-                  tasks={taskData}
-                  onDeleted={this.deleteItem}
-                  onToggleCompleted={this.onToggleCompleted}
-                  onToggleEditing={this.onToggleEditing} />
-               <Footer taskCount={taskCount} />
-            </section>
-         </section>
-      );
-   };
-};
+    return (
+      <section className="todoapp">
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm onItemAdded={this.addItem} />
+        </header>
+        <section className="main">
+          <TaskList
+            tasks={taskData}
+            onDeleted={this.deleteItem}
+            onToggleCompleted={this.onToggleCompleted}
+            onToggleEditing={this.onToggleEditing}
+            filterBtns={filterBtnsData}
+            onKeyCodeDown={this.onKeyCodeDown}
+          />
+          <Footer
+            taskCount={taskCount}
+            onClearCompleted={this.onClearCompleted}
+            filterBtns={filterBtnsData}
+            onToggleActive={this.onToggleActive}
+          />
+        </section>
+      </section>
+    );
+  }
+}
