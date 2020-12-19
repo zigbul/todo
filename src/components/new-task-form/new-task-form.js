@@ -1,36 +1,47 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { ENTER_KEY_CODE } from '../../constants';
+
 export default class NewTaskForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      label: '',
+    };
+  }
 
-   state = {
-      label: ''
-   };
+  onLabelChange = (e) => {
+    this.setState({
+      label: e.target.value,
+    });
+  };
 
-   onLabelChange = (e) => {
+  onKeyDown = (e) => {
+    const { onItemAdded } = this.props;
+    const { label } = this.state;
+
+    if (e.keyCode === ENTER_KEY_CODE) {
+      onItemAdded(label);
       this.setState({
-         label: e.target.value
+        label: '',
       });
-   };
+    }
+  };
 
-   onKeyDown = (e) => {
-      const ENTER_KEY_CODE = 13;
-      if (e.keyCode === ENTER_KEY_CODE) {
-         this.props.onItemAdded(this.state.label);
-         this.setState({
-            label: ''
-         });
-      };
-   };
+  render() {
+    const { label } = this.state;
+    return (
+      <input
+        className="new-todo"
+        placeholder="What needs to be done?"
+        onChange={this.onLabelChange}
+        onKeyDown={this.onKeyDown}
+        value={label}
+      />
+    );
+  }
+}
 
-   render() {
-
-      return (
-         <input
-            className="new-todo"
-            placeholder="What needs to be done?"
-            autoFocus
-            onChange={this.onLabelChange}
-            onKeyDown={this.onKeyDown}
-            value={this.state.label} />
-      );
-   };
+NewTaskForm.propTypes = {
+  onItemAdded: PropTypes.func,
 };

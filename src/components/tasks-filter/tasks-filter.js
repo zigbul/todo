@@ -1,24 +1,18 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import TaskFilterBtn from '../Task-filter-btn';
 
-export default class TasksFilter extends Component {
+const TasksFilter = ({ filterBtns, onToggleActive }) => {
+  const filterBtnsArr = filterBtns.map(({ id, ...filterBtnItems }) => {
+    return <TaskFilterBtn key={id} {...filterBtnItems} onToggleActive={() => onToggleActive(id)} />;
+  });
 
-   render() {
-
-      const filterBtns = this.props.filterBtns.map(({ id, ...filterBtnItems }) => {
-
-         return (
-            <TaskFilterBtn
-               key={id}
-               {...filterBtnItems}
-               onToggleActive={() => this.props.onToggleActive(id)} />
-         );
-      });
-
-      return (
-         <ul className="filters">
-            { filterBtns}
-         </ul >
-      );
-   };
+  return <ul className="filters">{filterBtnsArr}</ul>;
 };
+
+TasksFilter.propTypes = {
+  filterBtns: PropTypes.array,
+  onToggleActive: PropTypes.func,
+};
+
+export default TasksFilter;
