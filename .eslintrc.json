@@ -28,7 +28,7 @@
     "react/jsx-props-no-spreading": ["off"],
     "react/static-property-placement": "off",
     "arrow-body-style": "off",
-    "react/jsx-filename-extension": [1, { "allow": "as-needed" }],
+    "react/jsx-filename-extension": [0, { "allow": "as-needed" }],
     "react/require-default-props": [0, { "forbidDefaultForRequired": false, "ignoreFunctionalComponents": false }],
     "react/forbid-prop-types": [0, { "forbid": ["off"], "checkContextTypes": false, "checkChildContextTypes": false }],
     "import/no-unresolved": [
