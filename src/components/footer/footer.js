@@ -15,7 +15,7 @@ const Footer = ({ taskCount, onClearCompleted, filterBtns, onToggleActive }) => 
 };
 
 Footer.propTypes = {
-  taskCount: PropTypes.func,
+  taskCount: PropTypes.number,
   onClearCompleted: PropTypes.func,
   filterBtns: PropTypes.array,
   onToggleActive: PropTypes.func,

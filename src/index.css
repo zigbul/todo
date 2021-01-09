@@ -224,6 +224,7 @@ body {
 }
 
 .todo-list li label .description {
+	font-size: 15px;
 	word-break: break-all;
 	display: block;
 	line-height: 1.2;
@@ -284,7 +285,7 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	padding: 10px 15px;
-	height: 20px;
+	height: 25px;
 	text-align: center;
 	font-size: 15px;
 	border-top: 1px solid #e6e6e6;

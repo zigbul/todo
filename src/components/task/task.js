@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import PropTypes from 'prop-types';
+import Clocks from '../Clocks';
+
 
 export default class Task extends Component {
   constructor(props) {
@@ -57,6 +59,7 @@ export default class Task extends Component {
             <span id="description" className="description">
               {description}
             </span>
+            <Clocks />
             <span id="created" className="created">
               {formatDistanceToNow(time, { includeSeconds: true })}
             </span>

@@ -1,0 +1,32 @@
+* {
+   box-sizing: border-box;
+   margin: 0;
+}
+
+.clock {
+   display: flex;
+   align-items: center;
+   font-size: 10px;
+   margin: 0 10px;
+}
+
+.clock__run-btn, .clock__stop-btn {
+   border-radius: 50%;
+   background: tomato;
+   width: 20px;
+   height: 20px;
+}
+
+.clock__display {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-wrap: wrap;
+   width: 100px;
+   height: 20px;
+   border: 2px solid black;
+}
+
+.clock__display p:not(:last-child) {
+   margin-right: 5px;
+}
