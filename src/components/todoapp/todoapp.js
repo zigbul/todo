@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import '../../index.css';
 import { ENTER_KEY_CODE, ESC_KEY_CODE } from '../../constants';
 
@@ -6,83 +6,89 @@ import NewTaskForm from '../New-task-form';
 import TaskList from '../Task-list';
 import Footer from '../Footer';
 
-export default class TodoApp extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      taskData: [
-        this.createTodoItem('Completed Task'),
-        this.createTodoItem('Editing Task'),
-        this.createTodoItem('New Task'),
-      ],
-      filterBtnsData: [
-        { label: 'All', isActive: false, id: 1 },
-        { label: 'Active', isActive: true, id: 2 },
-        { label: 'Completed', isActive: false, id: 3 },
-      ],
-    };
-  }
+const TodoApp = () => {
 
-  setID = () => {
+  const setID = () => {
     return `_${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  deleteItem = (id) => {
-    this.setState(({ taskData }) => {
+  const createTodoItem = (description) => {
+    return {
+      description,
+      completed: false,
+      editing: false,
+      id: setID(),
+      hidden: false,
+      time: new Date(),
+    };
+  };
+
+  const [taskData, setTaskData] = useState(
+    [
+      createTodoItem('Completed Task'),
+      createTodoItem('Editing Task'),
+      createTodoItem('New Task'),
+    ]
+  );
+  const [filterBtnsData, setFilterBtnsData] = useState(
+    [
+      { label: 'All', isActive: false, id: 1 },
+      { label: 'Active', isActive: true, id: 2 },
+      { label: 'Completed', isActive: false, id: 3 },
+    ]
+  );
+
+  const deleteItem = (id) => {
       const newTaskData = taskData.filter((el) => el.id !== id);
+      setTaskData(newTaskData);
+  };
 
-      return {
-        taskData: newTaskData,
-      };
+  const addItem = (text) => {
+    const newItem = createTodoItem(text);
+    const newTaskData = [...taskData, newItem];
+    setTaskData(newTaskData);
+  };
+
+  const toggleProperty = (arr, id, propName) => {
+    return arr.map((item) => {
+      if (item.id === id) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
+
+      return item;
     });
   };
 
-  addItem = (text) => {
-    const newItem = this.createTodoItem(text);
-
-    this.setState(({ taskData }) => {
-      const newTaskData = [...taskData, newItem];
-
-      return {
-        taskData: newTaskData,
-      };
-    });
+  const onToggleCompleted = (id) => {
+    setTaskData(toggleProperty(taskData, id, 'completed'));
   };
 
-  onToggleCompleted = (id) => {
-    this.setState(({ taskData }) => {
-      return {
-        taskData: this.toggleProperty(taskData, id, 'completed'),
-      };
-    });
+  const onToggleEditing = (id) => {
+    setTaskData(toggleProperty(taskData, id, 'editing'));
   };
 
-  onToggleEditing = (id) => {
-    this.setState(({ taskData }) => {
-      return {
-        taskData: this.toggleProperty(taskData, id, 'editing'),
-      };
-    });
-  };
-
-  onClearCompleted = () => {
-    const { taskData } = this.state;
+  const onClearCompleted = () => {
     const newArr = taskData.filter((el) => !el.completed);
-    this.setState(() => {
-      return {
-        taskData: newArr,
-      };
+    setTaskData(newArr);
+  };
+
+  const activeToggler = (arr, id, propName) => {
+    return arr.map((item) => {
+      if (item.id === id && item.isActive === false) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
+      if (item.id !== id && item.isActive === true) {
+        const newItem = { ...item, [propName]: !item[propName] };
+        return newItem;
+      }
+      return item;
     });
   };
 
-  onToggleActive = (id) => {
-    this.setState(({ filterBtnsData }) => {
-      return {
-        filterBtnsData: this.activeToggler(filterBtnsData, id, 'isActive'),
-      };
-    });
-
-    const { taskData, filterBtnsData } = this.state;
+  const onToggleActive = (id) => {
+    setFilterBtnsData(activeToggler(filterBtnsData, id, 'isActive'));
 
     filterBtnsData.forEach((el) => {
       if (el.isActive && el.id === 3) {
@@ -97,11 +103,7 @@ export default class TodoApp extends Component {
           }
           return data;
         });
-        this.setState(() => {
-          return {
-            taskData: newArr,
-          };
-        });
+        setTaskData(newArr);
       } else if (el.isActive && el.id === 2) {
         const newArr = taskData.map((data) => {
           if (data.completed) {
@@ -114,99 +116,50 @@ export default class TodoApp extends Component {
           }
           return data;
         });
-        this.setState(() => {
-          return {
-            taskData: newArr,
-          };
-        });
+        setTaskData(newArr);
       } else if (el.isActive && el.id === 1) {
         const newArr = taskData.map((data) => {
           const newData = { ...data, hidden: false };
           return newData;
         });
-        this.setState(() => {
-          return {
-            taskData: newArr,
-          };
-        });
+        setTaskData(newArr);
       }
     });
   };
 
-  onKeyCodeDown = (e, id) => {
+  const onKeyCodeDown = (e, id) => {
     if (e.keyCode === ENTER_KEY_CODE || e.keyCode === ESC_KEY_CODE) {
-      this.setState(({ taskData }) => {
-        return {
-          taskData: this.toggleProperty(taskData, id, 'editing'),
-        };
-      });
-    }
+      setTaskData(toggleProperty(taskData, id, 'editing'))
+    };
   };
 
-  activeToggler(arr, id, propName) {
-    return arr.map((item) => {
-      if (item.id === id && item.isActive === false) {
-        const newItem = { ...item, [propName]: !item[propName] };
-        return newItem;
-      }
-      if (item.id !== id && item.isActive === true) {
-        const newItem = { ...item, [propName]: !item[propName] };
-        return newItem;
-      }
-      return item;
-    });
-  }
+  const completedCount = taskData.filter((el) => el.completed).length;
+  const taskCount = taskData.length - completedCount;
 
-  toggleProperty(arr, id, propName) {
-    return arr.map((item) => {
-      if (item.id === id) {
-        const newItem = { ...item, [propName]: !item[propName] };
-        return newItem;
-      }
-
-      return item;
-    });
-  }
-
-  createTodoItem(description) {
-    return {
-      description,
-      completed: false,
-      editing: false,
-      id: this.setID(),
-      hidden: false,
-      time: new Date(),
-    };
-  }
-
-  render() {
-    const { taskData, filterBtnsData } = this.state;
-    const completedCount = taskData.filter((el) => el.completed).length;
-    const taskCount = taskData.length - completedCount;
-
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTaskForm onItemAdded={this.addItem} />
-        </header>
-        <section className="main">
-          <TaskList
-            tasks={taskData}
-            onDeleted={this.deleteItem}
-            onToggleCompleted={this.onToggleCompleted}
-            onToggleEditing={this.onToggleEditing}
-            filterBtns={filterBtnsData}
-            onKeyCodeDown={this.onKeyCodeDown}
-          />
-          <Footer
-            taskCount={taskCount}
-            onClearCompleted={this.onClearCompleted}
-            filterBtns={filterBtnsData}
-            onToggleActive={this.onToggleActive}
-          />
-        </section>
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm onItemAdded={addItem} />
+      </header>
+      <section className="main">
+        <TaskList
+          tasks={taskData}
+          onDeleted={deleteItem}
+          onToggleCompleted={onToggleCompleted}
+          onToggleEditing={onToggleEditing}
+          filterBtns={filterBtnsData}
+          onKeyCodeDown={onKeyCodeDown}
+        />
+        <Footer
+          taskCount={taskCount}
+          onClearCompleted={onClearCompleted}
+          filterBtns={filterBtnsData}
+          onToggleActive={onToggleActive}
+        />
       </section>
-    );
-  }
-}
+    </section>
+  );
+};
+
+export default TodoApp;

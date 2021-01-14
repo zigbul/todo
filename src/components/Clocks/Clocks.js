@@ -1,82 +1,63 @@
-import React, {Component} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './Clocks.css';
 
-export default class Clocks extends Component {
+const Clocks = () => {
 
-   state = {
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      ticking: false,
-   };
+   const [hours, setHours] = useState(0);
+   const [minutes, setMinutes] = useState(0);
+   const [seconds, setSeconds] = useState(0);
+   const [ticking, setTicking] = useState(false);
 
-   componentDidMount() {
-      this.timer();
-      this.tickings = setInterval(this.timer, 1000);
-   }
-
-   componentWillUnmount() {
-      clearInterval(this.tickings);
-   }
-
-   startClocks = () => {
-      this.setState({
-         ticking: true,
-      });
-   };
-
-   stopClocks = () => {
-      this.setState({
-         ticking: false,
-      })
-   }
-
-   timer = () => {
-
-      const { ticking, seconds, minutes } = this.state;
+   const timer = useCallback(() => {
 
       if (ticking && seconds < 60) {
-         this.setState({
-            seconds: seconds + 1,
-         });
+         setSeconds((s) => s + 1);
       } else if (ticking && minutes < 60) {
-         this.setState({
-            minutes: minutes + 1,
-            seconds: 0,
-         });
+         setMinutes((m) => m + 1);
+         setSeconds(() => 0);
       } else if (ticking) {
-         this.setState({
-            minutes
-         })
+         setHours((h) => h + 1);
+         setMinutes(() => 0);
       }
+   }, [minutes, seconds, ticking]);
+
+   const startClocks = () => {
+      setTicking(() => true);
    };
 
-   render() {
+   const stopClocks = () => {
+      setTicking(() => false);
+   }
 
-      const { seconds, minutes, hours } = this.state;
+   useEffect(() => {
+      const tick = setInterval(timer, 1000);
 
-      return (
-         <div className="clock">
-            <button 
-               type="button"
-               className="clock__run-btn"
-               onClick={this.startClocks}
-               >
-                  {'>'}
-            </button>
-            <button 
-               type="button"
-               className="clock__stop-btn"
-               onClick={this.stopClocks}
-               >
-                  ||
-            </button>
-            <div className="clock__display">
-               <p> {hours} h </p>
-               <p> {minutes} min </p>
-               <p> {seconds} sec </p>
-            </div>
+      return clearInterval(tick);
+   }, [ timer ]);
+
+   return (
+      <div className="clock">
+         <button 
+            type="button"
+            className="clock__run-btn"
+            onClick={startClocks}
+            >
+               {'>'}
+         </button>
+         <button 
+            type="button"
+            className="clock__stop-btn"
+            onClick={stopClocks}
+            >
+               ||
+         </button>
+         <div className="clock__display">
+            <p> {hours} h </p>
+            <p> {minutes} min </p>
+            <p> {seconds} sec </p>
          </div>
-      );
-   };
+      </div>
+   );
 };
+
+export default Clocks;
